@@ -8,6 +8,8 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  var isLogin = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,11 +42,27 @@ class _AuthScreenState extends State<AuthScreen> {
                               textCapitalization: TextCapitalization.none,
                             ),
                             TextFormField(
-                              decoration: const InputDecoration(
-                                  labelText: "Password"),
+                              decoration:
+                                  const InputDecoration(labelText: "Password"),
                               keyboardType: TextInputType.text,
                               obscureText: true,
-                            )
+                            ),
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).primaryColorLight),
+                                child: Text(isLogin ? "Login" : "Sign up")),
+                            TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    isLogin = !isLogin;
+                                  });
+                                },
+                                child: Text(isLogin
+                                    ? "Create an Account"
+                                    : "I Already have an Account"))
                           ],
                         ),
                       )),
