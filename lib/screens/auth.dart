@@ -9,6 +9,19 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   var isLogin = true;
+  final form = GlobalKey<FormState>();
+
+  var enteredemail='';
+  var enteredpassword='';
+
+  void submit(){
+    final isValid=form.currentState!.validate();
+    if(isValid){
+      form.currentState!.save();
+      print(enteredemail);
+      print(enteredpassword);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,28 +44,52 @@ class _AuthScreenState extends State<AuthScreen> {
                   child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Form(
+                        key: form,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             TextFormField(
-                              decoration: const InputDecoration(
-                                  labelText: "Email Address"),
-                              keyboardType: TextInputType.emailAddress,
-                              autocorrect: false,
-                              textCapitalization: TextCapitalization.none,
-                            ),
+                                decoration: const InputDecoration(
+                                    labelText: "Email Address"),
+                                keyboardType: TextInputType.emailAddress,
+                                autocorrect: false,
+                                textCapitalization: TextCapitalization.none,
+                                onSaved: (value){
+                                  enteredemail=value!;
+                                },
+                                validator: (value) {
+                                  if (value == null ||
+                                      value.trim().isEmpty ||
+                                      !value.contains("@")) {
+                                    return "Enter the valid Email Address";
+                                  }
+                                  return null;
+                                }
+                                ),
                             TextFormField(
                               decoration:
                                   const InputDecoration(labelText: "Password"),
                               keyboardType: TextInputType.text,
                               obscureText: true,
+                              validator: (value) {
+                                if (value == null || value.trim().length < 6) {
+                                  return "Password must be at least 6 character long.";
+                                }
+                                return null;
+                              },
+                              onSaved: (value){
+                                enteredpassword=value!;
+
+                              },
                             ),
                             const SizedBox(
                               height: 12,
                             ),
                             ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).primaryColorLight),
+                                onPressed: submit,
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        Theme.of(context).primaryColorLight),
                                 child: Text(isLogin ? "Login" : "Sign up")),
                             TextButton(
                                 onPressed: () {
