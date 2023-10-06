@@ -21,6 +21,7 @@ class _AuthScreenState extends State<AuthScreen> {
   var enteredemail = '';
   var enteredpassword = '';
   File? selectedimage;
+  var isauthenticating=false;
 
   void submit() async {
     final isValid = form.currentState!.validate();
@@ -31,16 +32,25 @@ class _AuthScreenState extends State<AuthScreen> {
     if (isLogin) {
       // log user in
       try {
+        setState(() {
+          isauthenticating=true;
+        });
         final usercredentials = await firebase.signInWithEmailAndPassword(
             email: enteredemail, password: enteredpassword);
       } on FirebaseAuthException catch (error) {
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(error.message ?? 'Authentication Failed')));
+        setState(() {
+          isauthenticating=false;
+        });
       }
     } else {
       // sign up mode
       try {
+        setState(() {
+          isauthenticating=true;
+        });
         final usercredentials = await firebase.createUserWithEmailAndPassword(
             email: enteredemail, password: enteredpassword);
         final storageref = FirebaseStorage.instance
@@ -60,6 +70,9 @@ class _AuthScreenState extends State<AuthScreen> {
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(error.message ?? 'Authentication Failed')));
+        setState(() {
+          isauthenticating=false;
+        });
       }
     }
   }
@@ -140,12 +153,16 @@ class _AuthScreenState extends State<AuthScreen> {
                               const SizedBox(
                                 height: 12,
                               ),
+                              if(isauthenticating)
+                                const CircularProgressIndicator(),
+                              if(!isauthenticating)
                               ElevatedButton(
                                   onPressed: submit,
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor:
                                           Theme.of(context).primaryColorLight),
                                   child: Text(isLogin ? "Login" : "Sign up")),
+                              if(!isauthenticating)
                               TextButton(
                                   onPressed: () {
                                     setState(() {
