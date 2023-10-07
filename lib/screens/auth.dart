@@ -1,4 +1,5 @@
 import 'package:chat_app/widgets/user_image_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,7 +22,7 @@ class _AuthScreenState extends State<AuthScreen> {
   var enteredemail = '';
   var enteredpassword = '';
   File? selectedimage;
-  var isauthenticating=false;
+  var isauthenticating = false;
 
   void submit() async {
     final isValid = form.currentState!.validate();
@@ -33,7 +34,7 @@ class _AuthScreenState extends State<AuthScreen> {
       // log user in
       try {
         setState(() {
-          isauthenticating=true;
+          isauthenticating = true;
         });
         final usercredentials = await firebase.signInWithEmailAndPassword(
             email: enteredemail, password: enteredpassword);
@@ -42,14 +43,14 @@ class _AuthScreenState extends State<AuthScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(error.message ?? 'Authentication Failed')));
         setState(() {
-          isauthenticating=false;
+          isauthenticating = false;
         });
       }
     } else {
       // sign up mode
       try {
         setState(() {
-          isauthenticating=true;
+          isauthenticating = true;
         });
         final usercredentials = await firebase.createUserWithEmailAndPassword(
             email: enteredemail, password: enteredpassword);
@@ -59,9 +60,15 @@ class _AuthScreenState extends State<AuthScreen> {
             .child('${usercredentials.user!.uid}.jpg');
 
         storageref.putFile(selectedimage!);
-        final imageurl=await storageref.getDownloadURL();
-        print(imageurl);
-
+        final imageurl = await storageref.getDownloadURL();
+       await FirebaseFirestore.instance
+            .collection("users")
+            .doc(usercredentials.user!.uid)
+            .set({
+          'username': 'to be done...',
+          'email': enteredemail,
+          'image_url': imageurl
+        });
       } on FirebaseAuthException catch (error) {
         // you can specifically handle each other
         if (error.code == 'email-already-in-use') {
@@ -71,7 +78,7 @@ class _AuthScreenState extends State<AuthScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(error.message ?? 'Authentication Failed')));
         setState(() {
-          isauthenticating=false;
+          isauthenticating = false;
         });
       }
     }
@@ -153,25 +160,25 @@ class _AuthScreenState extends State<AuthScreen> {
                               const SizedBox(
                                 height: 12,
                               ),
-                              if(isauthenticating)
+                              if (isauthenticating)
                                 const CircularProgressIndicator(),
-                              if(!isauthenticating)
-                              ElevatedButton(
-                                  onPressed: submit,
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          Theme.of(context).primaryColorLight),
-                                  child: Text(isLogin ? "Login" : "Sign up")),
-                              if(!isauthenticating)
-                              TextButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      isLogin = !isLogin;
-                                    });
-                                  },
-                                  child: Text(isLogin
-                                      ? "Create an Account"
-                                      : "I Already have an Account"))
+                              if (!isauthenticating)
+                                ElevatedButton(
+                                    onPressed: submit,
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: Theme.of(context)
+                                            .primaryColorLight),
+                                    child: Text(isLogin ? "Login" : "Sign up")),
+                              if (!isauthenticating)
+                                TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        isLogin = !isLogin;
+                                      });
+                                    },
+                                    child: Text(isLogin
+                                        ? "Create an Account"
+                                        : "I Already have an Account"))
                             ],
                           ),
                         ),
