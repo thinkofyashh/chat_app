@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData().copyWith(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 0,255,0)),
+            seedColor: const Color.fromARGB(255, 63,17,177)),
       ),
       home:StreamBuilder(stream:FirebaseAuth.instance.authStateChanges() ,builder: (ctx,snapshot){
         if(snapshot.connectionState==ConnectionState.waiting){

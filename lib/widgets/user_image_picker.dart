@@ -1,32 +1,43 @@
-import 'dart:math';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'dart:io';
-
 class UserImagePicker extends StatefulWidget {
-  const UserImagePicker({Key? key,required this.onPickimage}) : super(key: key);
+  const UserImagePicker({
+    super.key,
+    required this.onPickImage,
+  });
 
-  final void Function(File pickedimage) onPickimage;
+  final void Function(File pickedImage) onPickImage;
 
   @override
-  State<UserImagePicker> createState() => _UserImagePickerState();
+  State<UserImagePicker> createState() {
+    return _UserImagePickerState();
+  }
 }
 
 class _UserImagePickerState extends State<UserImagePicker> {
-  File? pickedimagefile;
-  void pickimage()async{
-   final pickedimage=await ImagePicker().pickImage(source:ImageSource.camera,imageQuality: 50,maxWidth: 150);
+  File? _pickedImageFile;
 
-   if(pickedimage==null){
-     return ;
-   }
-   setState(() {
-     pickedimagefile=File(pickedimage.path);
-   });
-   widget.onPickimage(pickedimagefile!);
+  void _pickImage() async {
+    final pickedImage = await ImagePicker().pickImage(
+      source: ImageSource.camera,
+      imageQuality: 50,
+      maxWidth: 150,
+    );
+
+    if (pickedImage == null) {
+      return;
+    }
+
+    setState(() {
+      _pickedImageFile = File(pickedImage.path);
+    });
+
+    widget.onPickImage(_pickedImageFile!);
   }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -34,15 +45,19 @@ class _UserImagePickerState extends State<UserImagePicker> {
         CircleAvatar(
           radius: 40,
           backgroundColor: Colors.grey,
-          foregroundImage:pickedimagefile!=null ? FileImage(pickedimagefile!):null,
+          foregroundImage:
+          _pickedImageFile != null ? FileImage(_pickedImageFile!) : null,
         ),
         TextButton.icon(
-            onPressed: pickimage,
-            icon:const  Icon(Icons.image),
-            label: Text(
-              "Add Image",
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-            ))
+          onPressed: _pickImage,
+          icon: const Icon(Icons.image),
+          label: Text(
+            'Add Image',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+        )
       ],
     );
   }
