@@ -7,7 +7,7 @@ class ChatMessages extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-        stream: FirebaseFirestore.instance.collection("users").snapshots(),
+        stream: FirebaseFirestore.instance.collection("chat").snapshots(),
         builder: (ctx, chatSnapshots) {
           // while we are in the loading state
           if (chatSnapshots.connectionState == ConnectionState.waiting) {
