@@ -27,6 +27,7 @@ class _NewMessagesState extends State<NewMessages> {
     }
 
     FocusScope.of(context).unfocus();
+    messageController.clear();
 
     //send to firebase
     final user=FirebaseAuth.instance.currentUser!;
@@ -41,7 +42,7 @@ class _NewMessagesState extends State<NewMessages> {
     });
 
     // once we press the on Pressed function the data needs to be clear on the variable it should not hold the value of previous text.
-    messageController.clear();
+   // messageController.clear();
 
 
   }
